@@ -22,6 +22,19 @@ app.get('/cars', (req, res) => {
 }
 );
 
+app.get('/routes', (req, res) => {
+    res.json({message: "Testing Routes!"})
+});
+
 app.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
+
+
+
+
+
+
+
+
+
