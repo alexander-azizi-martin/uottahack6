@@ -3,9 +3,12 @@ const app = express();
 
 require('dotenv').config()
 
-const router = require('./routes/cars');
+const carRouter = require('./routes/cars');
 
-app.use(router)
+const findCarRouter = require('./routes/findCarRoute');
+
+app.use(carRouter)
+app.use(findCarRouter)
 
 app.get('/', (req, res) => {
     res.json({ message: 'Hello from server!' })
