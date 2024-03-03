@@ -1,28 +1,32 @@
 import { useGeolocation } from "@uidotdev/usehooks";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useClient from "~/hooks/useClient";
 
 export default function Client() {
+  const router = useRouter();
   const [_, refresh] = useState(0);
   const geolocation = useGeolocation();
   const client = useClient();
 
+  const carId = router.query.id as string;
+
   useEffect(() => {
-    if (client) {
+    if (client && carId) {
       const intervalId = setInterval(() => {
-        client.publish("1", JSON.stringify({ type: "ping" }));
+        client.publish(carId, JSON.stringify({ type: "ping" }));
       }, 2500);
 
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [client]);
+  }, [client, carId]);
 
   useEffect(() => {
     const { longitude, latitude } = geolocation;
 
-    if (client && longitude && latitude) {
+    if (client && carId && longitude && latitude) {
       const message: Message = {
         type: "location",
         data: {
@@ -31,12 +35,12 @@ export default function Client() {
         },
       };
 
-      client.publish("1", JSON.stringify(message));
+      client.publish(carId, JSON.stringify(message));
     }
   }, [client, geolocation]);
 
   useEffect(() => {
-    refresh((s) => s +  1);
+    refresh((s) => s + 1);
   }, []);
 
   return <main>hello</main>;
