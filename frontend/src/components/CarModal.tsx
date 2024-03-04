@@ -9,12 +9,17 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
+import useCarStore from "~/hooks/useCarStore";
 
-export default function AddCarModal() {
+interface AddCarModalProps {
+  onNewCar: (car: Car) => void;
+}
+
+export default function AddCarModal(props: AddCarModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
+  const { addCar } = useCarStore();
   const form = useForm({
     initialValues: {
-      carId: "",
       milesDriven: 0,
       milage: 0,
       batteryCharge: 0,
@@ -28,22 +33,32 @@ export default function AddCarModal() {
     <>
       <Button onClick={open}>Add car</Button>
       <Modal opened={opened} onClose={close} title="Add Car" centered>
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            const car = await (
+              await fetch("http://localhost:8000/cars", {
+                method: "POST",
+                body: JSON.stringify(values),
+                headers: { "Content-Type": "application/json" },
+              })
+            ).json();
+
+            addCar(car);
+            form.reset();
+            close();
+            props?.onNewCar(car);
+          })}
+        >
           <Stack>
-            <TextInput
-              label="Car Id"
-              placeholder="Car Id"
-              {...form.getInputProps("carId")}
+            <NumberInput
+              label="Milage"
+              placeholder="Milage"
+              {...form.getInputProps("milage")}
             />
             <NumberInput
               label="Miles Driven"
               placeholder="Miles Driven"
               {...form.getInputProps("milesDriven")}
-            />
-            <NumberInput
-              label="Milage"
-              placeholder="Milage"
-              {...form.getInputProps("milage")}
             />
             <InputWrapper label="Battery Charge" mb={16}>
               <Slider

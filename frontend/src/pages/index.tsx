@@ -8,19 +8,23 @@ import CarDispatch from "~/components/CarDispatch";
 
 export default function Home() {
   const client = useClient();
-  const { cars, timeout, ping, updateLocation } = useCarStore();
+  const { cars, timeout, ping, updateLocation, updateRoute } = useCarStore();
   const timeoutIds = useRef({} as any);
 
   useEffect(() => {
     if (client) {
+      fetch("http://localhost:5000/cars");
+
       client.subscribe("1");
 
-      client.on("message", (topic, message) => {
-        console.log(topic, message.toString());
-        const carId = parseInt(topic);
+      client.on("message", (carId, message) => {
         const parsedMessage = JSON.parse(message.toString()) as Message;
 
         switch (parsedMessage.type) {
+          case "route":
+            updateRoute(carId, parsedMessage.data);
+
+            break;
           case "location":
             updateLocation(carId, parsedMessage.data);
 
@@ -55,7 +59,11 @@ export default function Home() {
           <CarInfo car={car} key={car.id} />
         ))}
         <Center>
-          <CarModal />
+          <CarModal
+            onNewCar={(car) => {
+              client?.subscribe(car.id);
+            }}
+          />
         </Center>
       </Stack>
     </Container>

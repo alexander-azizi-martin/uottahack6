@@ -4,13 +4,17 @@ interface GeoLocation {
 }
 
 interface Car {
-  id: number;
-  distanceDriven: number;
-  carbonEmitted: number;
+  id: string;
+  milage: number;
+  milesDriven: number;
   batteryCharge: number;
   batteryHealth: number;
-  location?: GeoLocation;
+  route: any | null;
+  location: GeoLocation | null;
   status: "online" | "offline";
 }
 
-type Message = { type: "location"; data: GeoLocation } | { type: "ping" };
+type Message =
+  | { type: "location"; data: GeoLocation }
+  | { type: "ping" }
+  | { type: "route"; data: string };

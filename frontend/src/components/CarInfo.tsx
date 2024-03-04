@@ -23,7 +23,7 @@ export default function CarInfo({ car }: CarInfoProps) {
     if (car.location) {
       if (!map || !marker) {
         const newMap = new google.maps.Map(
-          document.getElementById("map-1") as HTMLElement,
+          document.getElementById(car.id) as HTMLElement,
           {
             center: car.location,
             zoom: 15,
@@ -41,12 +41,40 @@ export default function CarInfo({ car }: CarInfoProps) {
 
         setMap(newMap);
         setMarker(newMarker);
+
+        if (car.route) {
+          const decodedPath = google.maps.geometry.encoding.decodePath(
+            car.route
+          );
+
+          new google.maps.Polyline({
+            path: decodedPath,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+            map: map,
+          });
+        }
       } else {
         map.setCenter(car.location);
         marker.setPosition(car.location);
+
+        if (car.route) {
+          const decodedPath = google.maps.geometry.encoding.decodePath(
+            car.route
+          );
+
+          new google.maps.Polyline({
+            path: decodedPath,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+            map: map,
+          });
+        }
       }
     }
-  }, [map, marker, car.location]);
+  }, [map, marker, car.location, car.route]);
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -69,12 +97,12 @@ export default function CarInfo({ car }: CarInfoProps) {
             </Group>
           )}
           <Box>
-            <Text fw={700}>Distance Driven</Text>
-            <Box>{car.distanceDriven} miles</Box>
+            <Text fw={700}>Milage</Text>
+            <Box>{car.milage} miles</Box>
           </Box>
           <Box>
-            <Text fw={700}>Carbon Footprint</Text>
-            <Box>{car.carbonEmitted} tons</Box>
+            <Text fw={700}>Distance Driven</Text>
+            <Box>{car.milesDriven} miles</Box>
           </Box>
           <Box>
             <Text fw={700}>Battery Charge</Text>
@@ -108,15 +136,15 @@ export default function CarInfo({ car }: CarInfoProps) {
           h="300px"
           bg={"grey"}
           c={"white"}
-          display={car.location === undefined ? "flex" : "none"}
+          display={car.location === null ? "flex" : "none"}
         >
           Location Not Known
         </Flex>
         <Box
-          id="map-1"
+          id={car.id}
           w="300px"
           h="300px"
-          display={car.location !== undefined ? "block" : "none"}
+          display={car.location !== null ? "block" : "none"}
         ></Box>
       </Flex>
     </Card>

@@ -5,43 +5,51 @@ interface State {
 }
 
 interface Actions {
-  ping: (carId: number) => void;
-  timeout: (cardId: number) => void;
-  updateLocation: (cardId: number, location: GeoLocation) => void;
+  addCar: (car: Car) => void;
+  ping: (carId: string) => void;
+  timeout: (carId: string) => void;
+  updateRoute: (carId: string, route: string) => void;
+  updateLocation: (carId: string, location: GeoLocation) => void;
 }
 
 const initialCars: Car[] = [
   {
-    id: 1,
+    id: "EkANqm1pegqzPl9SEcn8G",
     batteryCharge: 90,
     batteryHealth: 70,
-    carbonEmitted: 130,
-    distanceDriven: 150,
+    milesDriven: 150,
+    milage: 160,
     status: "offline",
-    location: undefined,
+    route: null,
+    location: null,
   },
 ];
 
 const useCarStore = create<State & Actions>((set) => ({
   cars: initialCars,
-  ping: (cardId: number) =>
+  addCar: (car) => set((state) => ({ cars: [...state.cars, car] })),
+  ping: (carId) =>
     set((state) => ({
       cars: state.cars.map((car) =>
-        car.id === cardId ? { ...car, status: "online" } : car
+        car.id === carId ? { ...car, status: "online" } : car
       ),
     })),
-  timeout: (cardId: number) =>
+  updateRoute: (carId, route) =>
     set((state) => ({
       cars: state.cars.map((car) =>
-        car.id === cardId
-          ? { ...car, status: "offline", location: undefined }
-          : car
+        car.id === carId ? { ...car, route: route } : car
       ),
     })),
-  updateLocation: (cardId: number, location: GeoLocation) =>
+  timeout: (carId) =>
     set((state) => ({
       cars: state.cars.map((car) =>
-        car.id === cardId ? { ...car, location } : car
+        car.id === carId ? { ...car, status: "offline", location: null } : car
+      ),
+    })),
+  updateLocation: (carId, location) =>
+    set((state) => ({
+      cars: state.cars.map((car) =>
+        car.id === carId ? { ...car, location } : car
       ),
     })),
 }));

@@ -2,6 +2,7 @@ import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocomplet
 import { Box, Button, Group } from "@mantine/core";
 import { useState } from "react";
 import LocationAutoComplete from "~/components/LocationAutoComplete";
+import useCarStore from "~/hooks/useCarStore";
 
 export default function CarDispatch() {
   const [sourceId, setSourceId] = useState<string>();
@@ -24,6 +25,16 @@ export default function CarDispatch() {
 
     setSourceValue("");
     setTargetValue("");
+
+    const result = await (
+      await fetch("localhost:8000/route", {
+        body: JSON.stringify({}),
+      })
+    ).json();
+
+    if ("error" in result) {
+      
+    }
   };
 
   return (

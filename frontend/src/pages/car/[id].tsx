@@ -17,6 +17,8 @@ export default function Client() {
         client.publish(carId, JSON.stringify({ type: "ping" }));
       }, 2500);
 
+      client.subscribe(carId);
+
       return () => {
         clearInterval(intervalId);
       };
